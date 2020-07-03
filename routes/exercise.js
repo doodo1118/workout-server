@@ -1,16 +1,38 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+const {isLoggedIn, isNotLoggedIn} = require('./middelwares');
+const {History} = require('../models');
+
+// /log
+// isLoggedIn
+router.post('/result',  async function(req, res, next){
+
+    const {userId, logs, summary} = req.body.me;
+    const {volume, sets, targets} = summary;
+
+    const { startedExerciseAt, runningTime} = req.body;
+    console.log(startedExerciseAt, runningTime);
+    // if(userId === req.user.id)
+
+    try{
+        let history = await History.create({
+            userId: userId, 
+            startedAt: startedExerciseAt,
+            logs:{ logs }, 
+            volume:volume, 
+            time: runningTime, 
+            sets: sets, 
+            targets: {targets}, 
+            // memo, 
+        });
+        
+        let historyId = history.id;
+        res.send({historyId: historyId});
+    }catch(e){
+        console.log(e);
+    }
+    
 });
-
-
-router.post('/start');
-router.post('/finish');
-router.post('/addlog');
-
-
 
 module.exports = router;
