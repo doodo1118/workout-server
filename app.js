@@ -15,6 +15,7 @@ const options = {
 const sessionStore = new MySQLStore(options);
 
 const flash = require('connect-flash');
+require('dotenv').config();
 const passport = require('passport');
 const passportConfig = require('./passport');
 const cors = require('cors');
@@ -37,11 +38,11 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser('secret code'));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session({
   resave: false,
   saveUninitialized: false,
-  secret: 'secret code',
+  secret: process.env.COOKIE_SECRET,
   store: sessionStore, 
   cookie:{
     httpOnly: true,
