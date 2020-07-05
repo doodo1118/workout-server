@@ -2,22 +2,20 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const morgan = require('morgan');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-const options = {
-  host: 'localhost',
-  port: 3306,
-  user: 'root',
-  password: 'mysql',
-  database: 'workout'
-};
-const sessionStore = new MySQLStore(options);
+const sequelizeConfig = require('./config/config');
+const sessionStore = new MySQLStore( sequelizeConfig.production );
 
 const flash = require('connect-flash');
 require('dotenv').config();
 const passport = require('passport');
 const passportConfig = require('./passport');
+const logger = require('./logger');
+const helmet = require('helmet');
+const hpp = require('hpp');
+
 const cors = require('cors');
 
 const userRouter = require('./routes/user');
@@ -35,7 +33,14 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
+if(process.env.NODE_ENV === 'production'){
+  app.use( morgan('combined') );
+  app.use(helmet());
+  app.use(hpp());
+}else{
+  app.use( morgan('dev') );
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -73,7 +78,11 @@ app.use('/search', searchRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  const err = new Error('Not Found');
+  err.status = 404;
+  logger.info('hello');
+  logger.error(err.message);
+  next(err);
 });
 
 // error handler
