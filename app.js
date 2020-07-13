@@ -1,38 +1,26 @@
+
 const createError = require('http-errors');
 const express = require('express');
-const path = require('path');
+require('dotenv').config();
 const cookieParser = require('cookie-parser');
-const morgan = require('morgan');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-const sequelizeConfig = require('./config/config');
-const sessionStore = new MySQLStore( sequelizeConfig.production );
+const sequelizeConfig = require('./config/config').development;
 
-const flash = require('connect-flash');
-require('dotenv').config();
 const passport = require('passport');
 const passportConfig = require('./passport');
+
+const flash = require('connect-flash');
+const path = require('path');
 const logger = require('./logger');
 const helmet = require('helmet');
 const hpp = require('hpp');
-
 const cors = require('cors');
+const morgan = require('morgan');
 
-const userRouter = require('./routes/user');
-const accountRouter = require('./routes/account');
-const exerciseRouter = require('./routes/exercise');
-const contentsRouter = require('./routes/contents');
-const searchRouter = require('./routes/search');
+const routes = require('./routes');
 
-const sequelize = require('./models').sequelize;
-sequelize.sync();
-passportConfig(passport);
 const app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
 if(process.env.NODE_ENV === 'production'){
   app.use( morgan('combined') );
   app.use(helmet());
@@ -40,41 +28,48 @@ if(process.env.NODE_ENV === 'production'){
 }else{
   app.use( morgan('dev') );
 }
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+const sequelize = require('./models').sequelize;
+sequelize.sync();
+passportConfig(passport);
+
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session({
   resave: false,
   saveUninitialized: false,
   secret: process.env.COOKIE_SECRET,
-  store: sessionStore, 
+  store: new MySQLStore({
+    ...sequelizeConfig, 
+    user: sequelizeConfig.username,
+  }), 
   cookie:{
     httpOnly: true,
     secure: false,
     maxAge: 240*60*1000,
   }
 }));
-app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(flash());
+app.use(cors());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors());
+app.use((req, res, next)=>{console.log('in contents', req.sessionID); next() });
+app.use('/bookmark', routes.user);
+app.use('/follow', routes.user);
+app.use('/history', routes.user);
+app.use('/statistic', routes.user);
+app.use('/template', routes.user);
+app.use('/setting', routes.user);
 
-app.use('/bookmark', userRouter);
-app.use('/follow', userRouter);
-app.use('/history', userRouter);
-app.use('/statistic', userRouter);
-app.use('/template', userRouter);
-app.use('/setting', userRouter);
-
-app.use('/account', accountRouter);
-app.use('/exercise', exerciseRouter);
-app.use('/contents', contentsRouter);
-app.use('/search', searchRouter);
+app.use('/account', routes.account);
+app.use('/exercise', routes.exercise);
+app.use('/contents', routes.contents);
+app.use('/search', routes.contents);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

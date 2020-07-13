@@ -8,7 +8,6 @@ module.exports = (passport) => {
     usernameField: 'id',
     passwordField: 'password',
     session: true, 
-    
   }, async (usernameField, passwordField, done) => {
     try {
 

@@ -5,6 +5,25 @@ const {isLoggedIn, isNotLoggedIn} = require('./middelwares');
 const {User, Follow, Routine, Bookmark} = require('../models');
 
 
+router.get('/:user', async function(req, res, next){
+    let result = await getUserInformation( req.params.id );
+    res.send(result);
+});
+async function getUserInformation(userId){
+    try{
+        let result = await User.findAll({
+            attributes:[''], 
+            where:{
+                userId: userId, 
+            }
+        })
+        return result;
+        
+    }catch(error){
+        console.log(error);
+    }
+}
+
 router.get('/bookmark/:user', async function(req, res, next){
     let result = await getBookmarksByUserId( req.params.id );
     res.send(result);

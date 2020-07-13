@@ -8,26 +8,30 @@ const { isLoggedIn, isNotLoggedIn } = require('./middelwares');
 
 const {User} = require('../models');
 
-// router.post('/login', isNotLoggedIn, function(req, res, next) {
-//     passport.authenticate('local', function(err, user, info) {
-//       if (err) { return next(err); }
-//       if (!user) { return res.redirect('/signin'); }
-//       console.log('sebb', user);
-//       req.logIn(user, function(err) {
-//         if (err) { return next(err); }
-//         return     res.send(req.user.id);
-
-//       });
-//     })(req, res, next);
-//   }, function (req, res){
-//     console.log("console.log", req.session);
-//     res.send(req.user.id);
-// })
-
-router.post('/login', isNotLoggedIn, passport.authenticate('local'), function (req, res){
-    
-    res.send({userId: req.user.id});
+router.post('/login', isNotLoggedIn, function(req, res, next) {
+    passport.authenticate('local', function(err, user, info) {
+      if (err) { return next(err); }
+      if (!user) { return res.send({}); }
+      
+      req.logIn(user, function(err) {
+        if (err) { return next(err); }
+        return     res.send({userId: req.user.id});
+      });
+    })(req, res, next);
+  }, function (req, res){
+    res.send(req.user.id);
 })
+
+// router.post('/login', isNotLoggedIn, passport.authenticate('local'), function (req, res){
+    
+//     res.send({userId: req.user.id});
+// })
+router.get('/logout', isLoggedIn, (req, res)=>{
+    req.logout();
+    req.session.destroy();
+    res.send('success');
+});
+
 router.post('/register', isNotLoggedIn, async function(req, res, next){
     const { id, password, emailAddress } = req.body;
     
