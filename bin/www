@@ -3,6 +3,7 @@
 /**
  * Module dependencies.
  */
+// local 에서 dev모드 : 포트번호 3001 / spa baseUrl Home/index.js baseUrl / env mysql password / models/config.js file
 
 var app = require('../app');
 var debug = require('debug')('workout-server:server');
@@ -12,7 +13,7 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '3001');
 app.set('port', port);
 
 /**

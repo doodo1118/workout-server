@@ -6,6 +6,8 @@ const {Routine, User, History} = require('../models');
 
 // url: /contents
 router.get('/', async function(req, res, next){ 
+    // console.log('in contents req._passport', req._passport);
+    // console.log('in contents req.header', req.headers);
     let routines = await getRoutines();
     let users = await getUsers();
     let histories  = await getHistories();

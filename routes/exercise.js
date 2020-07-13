@@ -12,9 +12,8 @@ router.post('/result',  async function(req, res, next){
     const {volume, sets, targets} = summary;
 
     const { startedExerciseAt, runningTime} = req.body;
-    console.log(startedExerciseAt, runningTime);
     // if(userId === req.user.id)
-
+    
     try{
         let history = await History.create({
             userId: userId, 
@@ -27,8 +26,10 @@ router.post('/result',  async function(req, res, next){
             // memo, 
         });
         
+        
         let historyId = history.id;
-        res.send({historyId: historyId});
+        // res.send({historyId: historyId});
+        next();
     }catch(e){
         console.log(e);
     }

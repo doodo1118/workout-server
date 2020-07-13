@@ -16,6 +16,9 @@ const User = (sequelize, Sequelize)=>(
     introduction:{
       type: Sequelize.STRING,
     },
+    // instagram:{
+      // type: Sequelize.STRING,
+    // },
     image:{
       type: Sequelize.STRING,
     }
