@@ -5,8 +5,6 @@ const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
-const { isLoggedIn, isNotLoggedIn } = require('./middelwares');
-
 const {User} = require('../models');
 
 router.post('/login', function(req, res, next) {
@@ -28,13 +26,13 @@ router.post('/login', function(req, res, next) {
     })(req, res, next);
 })
 
-router.get('/logout', isLoggedIn, (req, res)=>{
+router.get('/logout', (req, res)=>{
     req.logout();
     req.session.destroy();
     res.send('success');
 });
 
-router.post('/register', isNotLoggedIn, async function(req, res, next){
+router.post('/register', async function(req, res, next){
     const { id, password, emailAddress } = req.body;
     
     try{
