@@ -1,6 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -8,26 +9,24 @@ const { isLoggedIn, isNotLoggedIn } = require('./middelwares');
 
 const {User} = require('../models');
 
-router.post('/login', isNotLoggedIn, function(req, res, next) {
+router.post('/login', function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
       if (err) { return next(err); }
       if (!user) { return res.send({}); }
       
-      req.logIn(user, function(err) {
-        if (err) { return next(err); }
-        return     res.send({userId: req.user.id});
-      });
-
-
+        const token = jwt.sign({
+            id: user.id, 
+        }, process.env.JWT_SECRET, {
+            expiresIn: '1m', 
+            issuer: 'workout-api',
+        });
+        return res.json({
+            code: 200, 
+            jwt: token, 
+        })
     })(req, res, next);
-  }, function (req, res){
-    res.send(req.user.id);
 })
 
-// router.post('/login', isNotLoggedIn, passport.authenticate('local'), function (req, res){
-    
-//     res.send({userId: req.user.id});
-// })
 router.get('/logout', isLoggedIn, (req, res)=>{
     req.logout();
     req.session.destroy();

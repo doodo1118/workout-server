@@ -1,17 +1,19 @@
 const express = require('express');
 const router = express.Router();
 
-const {isLoggedIn, isNotLoggedIn} = require('./middelwares');
+const { verifyToken } = require('./middelwares');
+
 const {History} = require('../models');
 
 // /log
 // isLoggedIn
-router.post('/result',  async function(req, res, next){
+router.post('/result', verifyToken, async function(req, res, next){
 
     const {userId, logs, summary} = req.body.me;
     const {volume, sets, targets} = summary;
 
     const { startedExerciseAt, runningTime} = req.body;
+    console.log('ssssssss', req.decoded);
     // if(userId === req.user.id)
     
     try{
@@ -28,7 +30,7 @@ router.post('/result',  async function(req, res, next){
         
         
         let historyId = history.id;
-        // res.send({historyId: historyId});
+        res.send({historyId: historyId});
         next();
     }catch(e){
         console.log(e);

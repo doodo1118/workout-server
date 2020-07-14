@@ -54,11 +54,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(flash());
-app.use(cors());
+app.use(cors({
+  credentials: true, 
+  origin: 'http://localhost:3000'
+}));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use((req, res, next)=>{console.log('in contents', req.sessionID); next() });
 app.use('/bookmark', routes.user);
 app.use('/follow', routes.user);
 app.use('/history', routes.user);
@@ -88,7 +90,6 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
 });
 
 module.exports = app;
