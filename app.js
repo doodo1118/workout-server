@@ -5,7 +5,7 @@ require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-const sequelizeConfig = require('./config/config').development;
+const sequelizeConfig = require('./config/config').production;
 
 const passport = require('passport');
 const passportConfig = require('./passport');
@@ -56,7 +56,7 @@ app.use(passport.session());
 app.use(flash());
 app.use(cors({
   credentials: true, 
-  origin: 'http://localhost:3000'
+  origin: process.env.DOMAIN_SPA,
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -77,7 +77,8 @@ app.use('/search', routes.saerch);
 app.use(function(req, res, next) {
   const err = new Error('Not Found');
   err.status = 404;
-  logger.info('hello');
+  let now = new Date();
+  logger.info(`${now.getHours} : ${now.getMinutes} : ${now.getSeconds}`);
   logger.error(err.message);
   next(err);
 });
