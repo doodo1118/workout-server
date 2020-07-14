@@ -61,17 +61,17 @@ app.use(cors({
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/bookmark', routes.user);
-app.use('/follow', routes.user);
-app.use('/history', routes.user);
-app.use('/statistic', routes.user);
-app.use('/template', routes.user);
-app.use('/setting', routes.user);
-
+app.use('/bookmark', routes.bookmark);
+app.use('/follow', routes.follow);
+app.use('/history', routes.history);
+app.use('/statistic', routes.statistic);
+app.use('/template', routes.template);
+app.use('/setting', routes.setting);
+app.use('/user', routes.user);
 app.use('/account', routes.account);
-app.use('/exercise', routes.exercise);
+// app.use('/exercise', routes.exercise);
 app.use('/contents', routes.contents);
-app.use('/search', routes.contents);
+app.use('/search', routes.saerch);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
