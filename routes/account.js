@@ -10,12 +10,15 @@ const {User} = require('../models');
 router.post('/login', function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
         if (err) { return next(err); }
-        if (!user) { return res.send({}); }
+        if (!user) { 
+            res.status(401);
+            res.json({message:'auth failed'});
+         }
       
         const token = jwt.sign({
             id: user.id, 
         }, process.env.JWT_SECRET, {
-            expiresIn: '1m', 
+            expiresIn: '240m', 
             issuer: 'workout-api',
         });
         return res.json({
@@ -65,9 +68,9 @@ router.post('/id-check', async function(req, res, next){
         });
         
         if(correspondingUser){
-            res.send(`not allowed`);
+            res.send({message:`not allowed`});
         }else{
-            res.send('allowed');
+            res.send({message:'allowed'});
         }
 
     }catch(error){

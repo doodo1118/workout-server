@@ -54,7 +54,7 @@ async function getUsers(){
             attributes: ['id', 'introduction'],
             where: {}, 
             // order: sequelize.col('age'),
-            limit: 1, 
+            limit: 10, 
             // offset: 
         });
 
