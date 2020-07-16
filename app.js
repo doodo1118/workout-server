@@ -56,8 +56,8 @@ app.use(passport.session());
 app.use(flash());
 app.use(cors({
   credentials: true, 
-  // origin: process.env.DOMAIN_SPA,
-  origin: 'http://localhost:3000'
+  origin: process.env.DOMAIN_SPA,
+  // origin: 'http://localhost:3000'
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
